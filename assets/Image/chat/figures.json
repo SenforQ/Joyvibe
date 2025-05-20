@@ -1,0 +1,382 @@
+[
+  {
+    "figureID": 1,
+    "figureName": "Ethan",
+    "figureNickname": "Ethan",
+    "figureRecommendVideo": "assets/Image/chat/1/v/1_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/1/p/1_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Ethan is an ISTJ who values structure and reliability. He finds peace in the rhythm of the waves and enjoys the discipline that surfing brings. For him, surfing is not just a sport but a way to connect with nature and maintain balance in life.",
+    "figureVideoArray": [
+      "assets/Image/chat/1/v/1_v_2025_05_16_1.mp4",
+      "assets/Image/chat/1/v/1_v_2025_05_16_2.mp4",
+      "assets/Image/chat/1/v/1_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/1/p/1_p_2025_05_16_1.png",
+      "assets/Image/chat/1/p/1_p_2025_05_16_2.png",
+      "assets/Image/chat/1/p/1_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey there! I'm Ethan. The ocean is my second home, and I believe every wave teaches us something new. Ready to catch some waves and share stories?"
+  },
+  {
+    "figureID": 2,
+    "figureName": "Mason",
+    "figureNickname": "Mason",
+    "figureRecommendVideo": "assets/Image/chat/2/v/2_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/2/p/2_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Mason, an ENFP, is full of energy and curiosity. He loves meeting new people and finds surfing to be the perfect adventure. The freedom of the sea matches his spontaneous spirit, and he's always up for exploring new surf spots.",
+    "figureVideoArray": [
+      "assets/Image/chat/2/v/2_v_2025_05_16_1.mp4",
+      "assets/Image/chat/2/v/2_v_2025_05_16_2.mp4",
+      "assets/Image/chat/2/v/2_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/2/p/2_p_2025_05_16_1.png",
+      "assets/Image/chat/2/p/2_p_2025_05_16_2.png",
+      "assets/Image/chat/2/p/2_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi! I'm Mason. Surfing is my passion, and I love making new friends on the beach. Let's ride the waves and see where the tide takes us!"
+  },
+  {
+    "figureID": 3,
+    "figureName": "Lucas",
+    "figureNickname": "Lucas",
+    "figureRecommendVideo": "assets/Image/chat/3/v/3_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/3/p/3_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Lucas is an INTP who enjoys analyzing the patterns of the ocean. Surfing, for him, is a blend of science and art. He appreciates the solitude of early morning surf sessions and the endless possibilities each wave brings.",
+    "figureVideoArray": [
+      "assets/Image/chat/3/v/3_v_2025_05_16_1.mp4",
+      "assets/Image/chat/3/v/3_v_2025_05_16_2.mp4",
+      "assets/Image/chat/3/v/3_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/3/p/3_p_2025_05_16_1.png",
+      "assets/Image/chat/3/p/3_p_2025_05_16_2.png",
+      "assets/Image/chat/3/p/3_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello! I'm Lucas. I find surfing fascinating—every wave is a new puzzle. Want to join me in discovering the secrets of the sea?"
+  },
+  {
+    "figureID": 4,
+    "figureName": "Noah",
+    "figureNickname": "Noah",
+    "figureRecommendVideo": "assets/Image/chat/4/v/4_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/4/p/4_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Noah, an ESFP, thrives on excitement and fun. He loves the thrill of catching big waves and the social vibe at the beach. Surfing is his way to express joy and live in the moment.",
+    "figureVideoArray": [
+      "assets/Image/chat/4/v/4_v_2025_05_16_1.mp4",
+      "assets/Image/chat/4/v/4_v_2025_05_16_2.mp4",
+      "assets/Image/chat/4/v/4_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/4/p/4_p_2025_05_16_1.png",
+      "assets/Image/chat/4/p/4_p_2025_05_16_2.png",
+      "assets/Image/chat/4/p/4_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey! I'm Noah. The beach is my playground, and surfing is my favorite game. Let's have some fun and make unforgettable memories!"
+  },
+  {
+    "figureID": 5,
+    "figureName": "Aiden",
+    "figureNickname": "Aiden",
+    "figureRecommendVideo": "assets/Image/chat/5/v/5_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/5/p/5_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Aiden is an ESTJ who approaches surfing with determination and leadership. He enjoys organizing group surf trips and believes in pushing limits. For Aiden, surfing is about setting goals and achieving them.",
+    "figureVideoArray": [
+      "assets/Image/chat/5/v/5_v_2025_05_16_1.mp4",
+      "assets/Image/chat/5/v/5_v_2025_05_16_2.mp4",
+      "assets/Image/chat/5/v/5_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/5/p/5_p_2025_05_16_1.png",
+      "assets/Image/chat/5/p/5_p_2025_05_16_2.png",
+      "assets/Image/chat/5/p/5_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi, I'm Aiden. I love a good challenge and believe surfing brings out the best in us. Ready to set some goals and ride the waves together?"
+  },
+  {
+    "figureID": 6,
+    "figureName": "Jack",
+    "figureNickname": "Jack",
+    "figureRecommendVideo": "assets/Image/chat/6/v/6_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/6/p/6_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Jack, an ISFP, is a quiet observer who finds inspiration in the beauty of the ocean. Surfing is his creative outlet, allowing him to express himself freely and connect with the natural world.",
+    "figureVideoArray": [
+      "assets/Image/chat/6/v/6_v_2025_05_16_1.mp4",
+      "assets/Image/chat/6/v/6_v_2025_05_16_2.mp4",
+      "assets/Image/chat/6/v/6_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/6/p/6_p_2025_05_16_1.png",
+      "assets/Image/chat/6/p/6_p_2025_05_16_2.png",
+      "assets/Image/chat/6/p/6_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello, I'm Jack. I find peace in the sound of the waves and the feel of the board. Let's surf and enjoy the beauty around us."
+  },
+  {
+    "figureID": 7,
+    "figureName": "Olivia",
+    "figureNickname": "Olivia",
+    "figureRecommendVideo": "assets/Image/chat/7/v/7_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/7/p/7_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Olivia is an ENFJ who loves bringing people together. She sees surfing as a way to build friendships and inspire others. Her positive energy makes every surf session uplifting and memorable.",
+    "figureVideoArray": [
+      "assets/Image/chat/7/v/7_v_2025_05_16_1.mp4",
+      "assets/Image/chat/7/v/7_v_2025_05_16_2.mp4",
+      "assets/Image/chat/7/v/7_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/7/p/7_p_2025_05_16_1.png",
+      "assets/Image/chat/7/p/7_p_2025_05_16_2.png",
+      "assets/Image/chat/7/p/7_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi! I'm Olivia. Surfing is more than a sport—it's about community and joy. Let's catch some waves and create great memories!"
+  },
+  {
+    "figureID": 8,
+    "figureName": "Emma",
+    "figureNickname": "Emma",
+    "figureRecommendVideo": "assets/Image/chat/8/v/8_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/8/p/8_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Emma, an INFJ, is thoughtful and empathetic. She finds surfing to be a meditative experience, helping her reflect and recharge. The ocean is her sanctuary, and she loves sharing its calm with friends.",
+    "figureVideoArray": [
+      "assets/Image/chat/8/v/8_v_2025_05_16_1.mp4",
+      "assets/Image/chat/8/v/8_v_2025_05_16_2.mp4",
+      "assets/Image/chat/8/v/8_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/8/p/8_p_2025_05_16_1.png",
+      "assets/Image/chat/8/p/8_p_2025_05_16_2.png",
+      "assets/Image/chat/8/p/8_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello, I'm Emma. I believe surfing brings peace to the mind and soul. Want to join me for a relaxing session by the sea?"
+  },
+  {
+    "figureID": 9,
+    "figureName": "Ava",
+    "figureNickname": "Ava",
+    "figureRecommendVideo": "assets/Image/chat/9/v/9_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/9/p/9_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Ava is an ISFJ who cares deeply for others. She enjoys the routine of surfing and the sense of belonging it brings. For Ava, the beach is a place to nurture friendships and find comfort.",
+    "figureVideoArray": [
+      "assets/Image/chat/9/v/9_v_2025_05_16_1.mp4",
+      "assets/Image/chat/9/v/9_v_2025_05_16_2.mp4",
+      "assets/Image/chat/9/v/9_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/9/p/9_p_2025_05_16_1.png",
+      "assets/Image/chat/9/p/9_p_2025_05_16_2.png",
+      "assets/Image/chat/9/p/9_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi, I'm Ava. I love the gentle rhythm of the waves and the warmth of good company. Let's surf and enjoy the simple pleasures together."
+  },
+  {
+    "figureID": 10,
+    "figureName": "Sophia",
+    "figureNickname": "Sophia",
+    "figureRecommendVideo": "assets/Image/chat/10/v/10_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/10/p/10_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Sophia, an ENTP, is inventive and loves a good debate. She sees surfing as a way to challenge herself and try new techniques. The unpredictability of the ocean excites her.",
+    "figureVideoArray": [
+      "assets/Image/chat/10/v/10_v_2025_05_16_1.mp4",
+      "assets/Image/chat/10/v/10_v_2025_05_16_2.mp4",
+      "assets/Image/chat/10/v/10_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/10/p/10_p_2025_05_16_1.png",
+      "assets/Image/chat/10/p/10_p_2025_05_16_2.png",
+      "assets/Image/chat/10/p/10_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey! I'm Sophia. I'm always up for trying new tricks and sharing ideas. Let's surf and see what adventures await!"
+  },
+  {
+    "figureID": 11,
+    "figureName": "Mia",
+    "figureNickname": "Mia",
+    "figureRecommendVideo": "assets/Image/chat/11/v/11_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/11/p/11_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Mia is an INFP who finds meaning in every wave. Surfing is her way to express her dreams and connect with the world. She values authenticity and deep conversations.",
+    "figureVideoArray": [
+      "assets/Image/chat/11/v/11_v_2025_05_16_1.mp4",
+      "assets/Image/chat/11/v/11_v_2025_05_16_2.mp4",
+      "assets/Image/chat/11/v/11_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/11/p/11_p_2025_05_16_1.png",
+      "assets/Image/chat/11/p/11_p_2025_05_16_2.png",
+      "assets/Image/chat/11/p/11_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello, I'm Mia. Surfing lets me dream and be myself. I'd love to hear your story while we ride the waves."
+  },
+  {
+    "figureID": 12,
+    "figureName": "Charlotte",
+    "figureNickname": "Charlotte",
+    "figureRecommendVideo": "assets/Image/chat/12/v/12_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/12/p/12_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Charlotte, an ESTP, is bold and action-oriented. She loves the adrenaline rush of surfing and the excitement of new challenges. The ocean is her playground.",
+    "figureVideoArray": [
+      "assets/Image/chat/12/v/12_v_2025_05_16_1.mp4",
+      "assets/Image/chat/12/v/12_v_2025_05_16_2.mp4",
+      "assets/Image/chat/12/v/12_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/12/p/12_p_2025_05_16_1.png",
+      "assets/Image/chat/12/p/12_p_2025_05_16_2.png",
+      "assets/Image/chat/12/p/12_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi! I'm Charlotte. I live for the thrill of the next big wave. Let's surf and make every moment count!"
+  },
+  {
+    "figureID": 13,
+    "figureName": "Amelia",
+    "figureNickname": "Amelia",
+    "figureRecommendVideo": "assets/Image/chat/13/v/13_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/13/p/13_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Amelia is an ESFJ who values harmony and connection. She enjoys organizing beach gatherings and making everyone feel welcome. Surfing is her way to spread happiness.",
+    "figureVideoArray": [
+      "assets/Image/chat/13/v/13_v_2025_05_16_1.mp4",
+      "assets/Image/chat/13/v/13_v_2025_05_16_2.mp4",
+      "assets/Image/chat/13/v/13_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/13/p/13_p_2025_05_16_1.png",
+      "assets/Image/chat/13/p/13_p_2025_05_16_2.png",
+      "assets/Image/chat/13/p/13_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey, I'm Amelia. I love bringing people together for a fun surf session. Let's make new friends and enjoy the waves!"
+  },
+  {
+    "figureID": 14,
+    "figureName": "Harper",
+    "figureNickname": "Harper",
+    "figureRecommendVideo": "assets/Image/chat/14/v/14_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/14/p/14_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Harper, an INTJ, is strategic and independent. She approaches surfing with focus and enjoys mastering new skills. The ocean's vastness inspires her to think big.",
+    "figureVideoArray": [
+      "assets/Image/chat/14/v/14_v_2025_05_16_1.mp4",
+      "assets/Image/chat/14/v/14_v_2025_05_16_2.mp4",
+      "assets/Image/chat/14/v/14_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/14/p/14_p_2025_05_16_1.png",
+      "assets/Image/chat/14/p/14_p_2025_05_16_2.png",
+      "assets/Image/chat/14/p/14_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello, I'm Harper. I see surfing as a journey of growth and discovery. Ready to challenge yourself with me?"
+  },
+  {
+    "figureID": 15,
+    "figureName": "Benjamin",
+    "figureNickname": "Benjamin",
+    "figureRecommendVideo": "assets/Image/chat/15/v/15_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/15/p/15_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Benjamin is an ENTJ who leads with confidence. He enjoys setting ambitious surfing goals and motivating others. For him, surfing is about progress and achievement.",
+    "figureVideoArray": [
+      "assets/Image/chat/15/v/15_v_2025_05_16_1.mp4",
+      "assets/Image/chat/15/v/15_v_2025_05_16_2.mp4",
+      "assets/Image/chat/15/v/15_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/15/p/15_p_2025_05_16_1.png",
+      "assets/Image/chat/15/p/15_p_2025_05_16_2.png",
+      "assets/Image/chat/15/p/15_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi, I'm Benjamin. I believe in pushing boundaries and reaching new heights. Let's surf and achieve greatness together!"
+  },
+  {
+    "figureID": 16,
+    "figureName": "Evelyn",
+    "figureNickname": "Evelyn",
+    "figureRecommendVideo": "assets/Image/chat/16/v/16_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/16/p/16_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Evelyn, an ISFP, is gentle and artistic. She finds beauty in the ocean's colors and the flow of surfing. Her sessions are peaceful and full of inspiration.",
+    "figureVideoArray": [
+      "assets/Image/chat/16/v/16_v_2025_05_16_1.mp4",
+      "assets/Image/chat/16/v/16_v_2025_05_16_2.mp4",
+      "assets/Image/chat/16/v/16_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/16/p/16_p_2025_05_16_1.png",
+      "assets/Image/chat/16/p/16_p_2025_05_16_2.png",
+      "assets/Image/chat/16/p/16_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi, I'm Evelyn. I love capturing the beauty of the sea while surfing. Let's enjoy a calm and creative ride!"
+  },
+  {
+    "figureID": 17,
+    "figureName": "Abigail",
+    "figureNickname": "Abigail",
+    "figureRecommendVideo": "assets/Image/chat/17/v/17_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/17/p/17_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Abigail is an ISTP who loves hands-on experiences. She enjoys experimenting with new surf moves and fixing her own gear. The ocean is her workshop.",
+    "figureVideoArray": [
+      "assets/Image/chat/17/v/17_v_2025_05_16_1.mp4",
+      "assets/Image/chat/17/v/17_v_2025_05_16_2.mp4",
+      "assets/Image/chat/17/v/17_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/17/p/17_p_2025_05_16_1.png",
+      "assets/Image/chat/17/p/17_p_2025_05_16_2.png",
+      "assets/Image/chat/17/p/17_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey, I'm Abigail. I like to try new things and solve problems on the go. Want to join me for an adventurous surf?"
+  },
+  {
+    "figureID": 18,
+    "figureName": "Ella",
+    "figureNickname": "Ella",
+    "figureRecommendVideo": "assets/Image/chat/18/v/18_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/18/p/18_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Ella, an ENFP, is enthusiastic and imaginative. She loves the freedom surfing brings and the stories each wave tells. She's always ready for a new adventure.",
+    "figureVideoArray": [
+      "assets/Image/chat/18/v/18_v_2025_05_16_1.mp4",
+      "assets/Image/chat/18/v/18_v_2025_05_16_2.mp4",
+      "assets/Image/chat/18/v/18_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/18/p/18_p_2025_05_16_1.png",
+      "assets/Image/chat/18/p/18_p_2025_05_16_2.png",
+      "assets/Image/chat/18/p/18_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hello! I'm Ella. Surfing is my way to explore and create memories. Let's ride the waves and share our dreams!"
+  },
+  {
+    "figureID": 19,
+    "figureName": "Lily",
+    "figureNickname": "Lily",
+    "figureRecommendVideo": "assets/Image/chat/19/v/19_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/19/p/19_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Lily is an INFJ who seeks meaning in every surf session. She enjoys quiet mornings by the sea and deep conversations. Surfing helps her connect with her inner self.",
+    "figureVideoArray": [
+      "assets/Image/chat/19/v/19_v_2025_05_16_1.mp4",
+      "assets/Image/chat/19/v/19_v_2025_05_16_2.mp4",
+      "assets/Image/chat/19/v/19_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/19/p/19_p_2025_05_16_1.png",
+      "assets/Image/chat/19/p/19_p_2025_05_16_2.png",
+      "assets/Image/chat/19/p/19_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hi, I'm Lily. I find peace and inspiration in the ocean. Let's surf and talk about life's wonders."
+  },
+  {
+    "figureID": 20,
+    "figureName": "Grace",
+    "figureNickname": "Grace",
+    "figureRecommendVideo": "assets/Image/chat/20/v/20_v_2025_05_16_1.mp4",
+    "figureRecommendHeaderIcon": "assets/Image/chat/20/p/20_p_2025_05_16_1.png",
+    "figureRecommendIntroduce": "Grace, an ESFP, is lively and loves to celebrate life. She enjoys the excitement of surfing and the joy of sharing it with friends. Every wave is a reason to smile.",
+    "figureVideoArray": [
+      "assets/Image/chat/20/v/20_v_2025_05_16_1.mp4",
+      "assets/Image/chat/20/v/20_v_2025_05_16_2.mp4",
+      "assets/Image/chat/20/v/20_v_2025_05_16_3.mp4"
+    ],
+    "figurePhotoArray": [
+      "assets/Image/chat/20/p/20_p_2025_05_16_1.png",
+      "assets/Image/chat/20/p/20_p_2025_05_16_2.png",
+      "assets/Image/chat/20/p/20_p_2025_05_16_3.png"
+    ],
+    "figureChatOpen": "Hey! I'm Grace. Surfing is all about fun and friendship for me. Let's catch some waves and make every moment joyful!"
+  }
+] 
