@@ -76,19 +76,21 @@ class _FigureProfilePageState extends State<FigureProfilePage> {
                         height: topImageHeight,
                         fit: BoxFit.cover,
                       ),
-                    // 返回按钮（不使用SafeArea，直接贴顶）
+                    // 返回按钮（使用SafeArea包裹）
                     Positioned(
                       left: 8,
-                      top: 16, // 直接贴近屏幕顶部
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                          size: 26,
+                      top: 0,
+                      child: SafeArea(
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                         ),
-                        onPressed: () => Navigator.of(context).pop(),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
                     ),
                   ],
@@ -150,13 +152,12 @@ class _FigureProfilePageState extends State<FigureProfilePage> {
                           _isFollowed ? Colors.white : const Color(0xFFDB64A5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side:
-                            _isFollowed
-                                ? const BorderSide(
-                                  color: Color(0xFFDB64A5),
-                                  width: 2,
-                                )
-                                : BorderSide.none,
+                        side: _isFollowed
+                            ? const BorderSide(
+                                color: Color(0xFFDB64A5),
+                                width: 2,
+                              )
+                            : BorderSide.none,
                       ),
                       elevation: 0,
                     ),
@@ -164,10 +165,9 @@ class _FigureProfilePageState extends State<FigureProfilePage> {
                       _isFollowed ? 'Unfollow' : 'Follow',
                       style: TextStyle(
                         fontSize: 18,
-                        color:
-                            _isFollowed
-                                ? const Color(0xFFDB64A5)
-                                : Colors.white,
+                        color: _isFollowed
+                            ? const Color(0xFFDB64A5)
+                            : Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -123,13 +123,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                         child: CircleAvatar(
                           radius: 40,
-                          backgroundImage:
-                              tempAvatarFile != null
-                                  ? FileImage(tempAvatarFile!)
-                                  : AssetImage(
-                                        'assets/Image/applogo_2025_5_15.png',
-                                      )
-                                      as ImageProvider,
+                          backgroundImage: tempAvatarFile != null
+                              ? FileImage(tempAvatarFile!)
+                              : AssetImage(
+                                  'assets/Image/applogo_2025_5_15.png',
+                                ) as ImageProvider,
                         ),
                       ),
                       Positioned(
@@ -250,18 +248,17 @@ class _ProfilePageState extends State<ProfilePage> {
               child: CircleAvatar(
                 radius: 54,
                 backgroundColor: Colors.white,
-                child:
-                    _avatarFile != null
-                        ? CircleAvatar(
-                          radius: 50,
-                          backgroundImage: FileImage(_avatarFile!),
-                        )
-                        : CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage(
-                            'assets/Image/applogo_2025_5_15.png',
-                          ),
+                child: _avatarFile != null
+                    ? CircleAvatar(
+                        radius: 50,
+                        backgroundImage: FileImage(_avatarFile!),
+                      )
+                    : CircleAvatar(
+                        radius: 50,
+                        backgroundImage: AssetImage(
+                          'assets/Image/applogo_2025_5_15.png',
                         ),
+                      ),
               ),
             ),
             const SizedBox(height: 12),
@@ -322,7 +319,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Icons.chevron_right,
                           color: Colors.grey,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/about');
+                        },
                       ),
                       ListTile(
                         leading: const Icon(
@@ -341,7 +340,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Icons.chevron_right,
                           color: Colors.grey,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/terms');
+                        },
                       ),
                       ListTile(
                         leading: const Icon(
@@ -360,7 +361,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Icons.chevron_right,
                           color: Colors.grey,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/privacy');
+                        },
                       ),
                     ],
                   ),

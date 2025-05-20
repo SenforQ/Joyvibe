@@ -3,6 +3,7 @@ import 'pages/welcome_page.dart';
 import 'pages/terms_of_service_page.dart';
 import 'pages/privacy_policy_page.dart';
 import 'pages/recommend_page.dart';
+import 'pages/about_us_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/terms': (context) => const TermsOfServicePage(),
         '/privacy': (context) => const PrivacyPolicyPage(),
         '/recommend': (context) => const RecommendPage(),
+        '/about': (context) => const AboutUsPage(),
       },
     );
   }
