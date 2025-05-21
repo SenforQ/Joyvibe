@@ -13,6 +13,10 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'report_page.dart';
+import '../utils/vip_check.dart';
+import 'vip_page.dart';
+import '../utils/coins_check.dart';
+import 'wallet_page.dart';
 
 // 1. 定义图片点赞/评论/举报本地状态
 class _ImageActionState {
@@ -71,11 +75,18 @@ class _ExplorePageState extends State<ExplorePage> {
   final String _currentUserId = 'me'; // 本地模拟当前用户ID
   String _currentUserAvatar = 'assets/Image/applogo_2025_5_15.png';
   String _currentUserNickname = 'Me';
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _initData();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _initData() async {
@@ -101,10 +112,9 @@ class _ExplorePageState extends State<ExplorePage> {
           _allPosts.where((p) => p.tags.contains(tag.key)).length;
     }
     // 默认选中第一个有内容的标签
-    _selectedTag =
-        _allTags
-            .firstWhere((t) => _tagCount[t.key]! > 0, orElse: () => _allTags[0])
-            .key;
+    _selectedTag = _allTags
+        .firstWhere((t) => _tagCount[t.key]! > 0, orElse: () => _allTags[0])
+        .key;
     setState(() {
       _loading = false;
     });
@@ -112,8 +122,7 @@ class _ExplorePageState extends State<ExplorePage> {
     await _generateAllVideoThumbnails();
     // 获取本地用户头像和昵称
     final nickname = prefs.getString('profile_nickname') ?? 'Me';
-    String avatar =
-        prefs.getString('profile_avatar') ??
+    String avatar = prefs.getString('profile_avatar') ??
         'assets/Image/applogo_2025_5_15.png';
     if (!avatar.startsWith('assets/')) {
       final dir = await getApplicationDocumentsDirectory();
@@ -328,24 +337,22 @@ class _ExplorePageState extends State<ExplorePage> {
                       final tag = _allTags[idx];
                       return GestureDetector(
                         onTap: () {
-                          final posts =
-                              _allPosts
-                                  .where((p) => p.tags.contains(tag.key))
-                                  .toList();
+                          final posts = _allPosts
+                              .where((p) => p.tags.contains(tag.key))
+                              .toList();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder:
-                                  (_) => TagExplorePage(
-                                    tagLabel: tag.label,
-                                    posts: posts,
-                                    avatarSize: avatarSize,
-                                    followedIds: _followedIds,
-                                    onToggleFollow: _toggleFollow,
-                                    commentsMap: _commentsMap,
-                                    currentUserId: _currentUserId,
-                                    currentUserAvatar: _currentUserAvatar,
-                                    currentUserNickname: _currentUserNickname,
-                                  ),
+                              builder: (_) => TagExplorePage(
+                                tagLabel: tag.label,
+                                posts: posts,
+                                avatarSize: avatarSize,
+                                followedIds: _followedIds,
+                                onToggleFollow: _toggleFollow,
+                                commentsMap: _commentsMap,
+                                currentUserId: _currentUserId,
+                                currentUserAvatar: _currentUserAvatar,
+                                currentUserNickname: _currentUserNickname,
+                              ),
                             ),
                           );
                         },
@@ -410,381 +417,379 @@ class _ExplorePageState extends State<ExplorePage> {
                       ),
                       child: Container(
                         color: Colors.white,
-                        child:
-                            _loading
-                                ? Center(child: CircularProgressIndicator())
-                                : ListView.separated(
-                                  padding: const EdgeInsets.only(
-                                    top: 15,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                  ),
-                                  itemCount: _allPosts.length,
-                                  separatorBuilder:
-                                      (_, __) => const SizedBox(height: 15),
-                                  itemBuilder: (context, idx) {
-                                    final post = _allPosts[idx];
-                                    final figure = post.figure;
-                                    final isFollowed = _followedIds.contains(
-                                      figure['figureID'].toString(),
-                                    );
-                                    return Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 244,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 18,
-                                              vertical: 0,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: avatarSize / 2,
-                                                      backgroundImage: AssetImage(
-                                                        figure['figureRecommendHeaderIcon'] ??
-                                                            'assets/Image/applogo_2025_5_15.png',
-                                                      ),
+                        child: _loading
+                            ? Center(child: CircularProgressIndicator())
+                            : ListView.separated(
+                                padding: const EdgeInsets.only(
+                                  top: 15,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                ),
+                                itemCount: _allPosts.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 15),
+                                itemBuilder: (context, idx) {
+                                  final post = _allPosts[idx];
+                                  final figure = post.figure;
+                                  final isFollowed = _followedIds.contains(
+                                    figure['figureID'].toString(),
+                                  );
+                                  return Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 244,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 18,
+                                            vertical: 0,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: avatarSize / 2,
+                                                    backgroundImage: AssetImage(
+                                                      figure['figureRecommendHeaderIcon'] ??
+                                                          'assets/Image/applogo_2025_5_15.png',
                                                     ),
-                                                    const SizedBox(width: 10),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          figure['figureName'] ??
-                                                              '',
-                                                          style:
-                                                              const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 18,
-                                                                color: Color(
-                                                                  0xFF2B1A2F,
-                                                                ),
-                                                              ),
-                                                        ),
-                                                        Text(
-                                                          _formatTimeSmart(
-                                                            post.time,
-                                                          ),
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 13,
-                                                                color: Color(
-                                                                  0xFF888888,
-                                                                ),
-                                                              ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const Spacer(),
-                                                    _buildFollowButton(
-                                                      isFollowed,
-                                                      figure['figureID']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  post.content,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    color: Color(0xFF2B1A2F),
                                                   ),
-                                                ),
-                                                if (post.images.isNotEmpty)
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                          top: 8,
+                                                  const SizedBox(width: 10),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        figure['figureName'] ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18,
+                                                          color: Color(
+                                                            0xFF2B1A2F,
+                                                          ),
                                                         ),
-                                                    child: Row(
-                                                      children:
-                                                          post.images.map((
-                                                            img,
-                                                          ) {
-                                                            return Padding(
-                                                              padding:
-                                                                  const EdgeInsets.only(
-                                                                    right: 8,
-                                                                  ),
-                                                              child: GestureDetector(
-                                                                onTap: () {
-                                                                  Navigator.of(
-                                                                    context,
-                                                                  ).push(
-                                                                    MaterialPageRoute(
-                                                                      builder:
-                                                                          (
-                                                                            _,
-                                                                          ) => FullScreenImageViewer(
-                                                                            imagePath:
-                                                                                img,
-                                                                          ),
-                                                                    ),
-                                                                  );
-                                                                },
-                                                                child: ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        12,
-                                                                      ),
-                                                                  child: Image.asset(
-                                                                    img,
-                                                                    width: 100,
-                                                                    height: 100,
-                                                                    fit:
-                                                                        BoxFit
-                                                                            .cover,
-                                                                  ),
+                                                      ),
+                                                      Text(
+                                                        _formatTimeSmart(
+                                                          post.time,
+                                                        ),
+                                                        style: const TextStyle(
+                                                          fontSize: 13,
+                                                          color: Color(
+                                                            0xFF888888,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Spacer(),
+                                                  _buildFollowButton(
+                                                    isFollowed,
+                                                    figure['figureID']
+                                                        .toString(),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                post.content,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Color(0xFF2B1A2F),
+                                                ),
+                                              ),
+                                              if (post.images.isNotEmpty)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    top: 8,
+                                                  ),
+                                                  child: Row(
+                                                    children: post.images.map((
+                                                      img,
+                                                    ) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          right: 8,
+                                                        ),
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).push(
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  _,
+                                                                ) =>
+                                                                    FullScreenImageViewer(
+                                                                  imagePath:
+                                                                      img,
                                                                 ),
                                                               ),
                                                             );
-                                                          }).toList(),
-                                                    ),
-                                                  ),
-                                                if (post.video != null)
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                          top: 8,
-                                                        ),
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).push(
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (
-                                                                  _,
-                                                                ) => FullScreenVideoPlayer(
-                                                                  videoPath:
-                                                                      post.video!,
-                                                                ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      child: Stack(
-                                                        children: [
-                                                          ClipRRect(
+                                                          },
+                                                          child: ClipRRect(
                                                             borderRadius:
-                                                                BorderRadius.circular(
-                                                                  12,
-                                                                ),
-                                                            child: Container(
-                                                              width: 160,
-                                                              height: 96,
-                                                              color:
-                                                                  Colors
-                                                                      .black12,
-                                                              child:
-                                                                  post.videoCoverBytes !=
-                                                                          null
-                                                                      ? Image.memory(
+                                                                BorderRadius
+                                                                    .circular(
+                                                              12,
+                                                            ),
+                                                            child: Image.asset(
+                                                              img,
+                                                              width: 100,
+                                                              height: 100,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                ),
+                                              if (post.video != null)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    top: 8,
+                                                  ),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).push(
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            _,
+                                                          ) =>
+                                                              FullScreenVideoPlayer(
+                                                            videoPath:
+                                                                post.video!,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Stack(
+                                                      children: [
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            12,
+                                                          ),
+                                                          child: Container(
+                                                            width: 160,
+                                                            height: 96,
+                                                            color:
+                                                                Colors.black12,
+                                                            child:
+                                                                post.videoCoverBytes !=
+                                                                        null
+                                                                    ? Image
+                                                                        .memory(
                                                                         post.videoCoverBytes!,
                                                                         width:
                                                                             160,
                                                                         height:
                                                                             96,
-                                                                        fit:
-                                                                            BoxFit.cover,
+                                                                        fit: BoxFit
+                                                                            .cover,
                                                                       )
-                                                                      : Center(
-                                                                        child: SizedBox(
+                                                                    : Center(
+                                                                        child:
+                                                                            SizedBox(
                                                                           width:
                                                                               32,
                                                                           height:
                                                                               32,
-                                                                          child: CircularProgressIndicator(
+                                                                          child:
+                                                                              CircularProgressIndicator(
                                                                             strokeWidth:
                                                                                 2,
                                                                           ),
                                                                         ),
                                                                       ),
-                                                            ),
                                                           ),
-                                                          Positioned.fill(
-                                                            child: Center(
-                                                              child: Icon(
-                                                                Icons
-                                                                    .play_circle_fill,
-                                                                color: Color(
-                                                                  0xFFB16CEA,
-                                                                ),
-                                                                size: 48,
+                                                        ),
+                                                        Positioned.fill(
+                                                          child: Center(
+                                                            child: Icon(
+                                                              Icons
+                                                                  .play_circle_fill,
+                                                              color: Color(
+                                                                0xFFB16CEA,
                                                               ),
+                                                              size: 48,
                                                             ),
                                                           ),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                // 20px空白
-                                                const SizedBox(height: 20),
-                                                // 操作按钮区域
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 15,
-                                                      ),
-                                                  child: StatefulBuilder(
-                                                    builder: (
-                                                      context,
-                                                      setModalState,
-                                                    ) {
-                                                      final String contentId =
-                                                          post.images.isNotEmpty
-                                                              ? post.images[0]
-                                                              : (post.video ??
-                                                                  '');
-                                                      final action = _imageActionMap
-                                                          .putIfAbsent(
-                                                            contentId,
-                                                            () =>
-                                                                _ImageActionState(
-                                                                  likeCount: 20,
-                                                                  commentCount:
-                                                                      5,
-                                                                ),
-                                                          );
-                                                      return Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          // 左侧举报按钮
-                                                          GestureDetector(
-                                                            onTap:
-                                                                () => _showImageReportSheet(
-                                                                  context,
-                                                                  post.figure,
-                                                                  contentId,
-                                                                ),
-                                                            child: Image.asset(
-                                                              'assets/Image/btn_report_2025_5_16_n.png',
-                                                              width: 24,
-                                                              height: 24,
-                                                            ),
-                                                          ),
-                                                          // 右侧点赞和评论按钮组
-                                                          Row(
-                                                            children: [
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  setModalState(() {
-                                                                    action.liked =
-                                                                        !action
-                                                                            .liked;
-                                                                    action.likeCount +=
-                                                                        action.liked
-                                                                            ? 1
-                                                                            : -1;
-                                                                  });
-                                                                },
-                                                                child: Row(
-                                                                  children: [
-                                                                    Image.asset(
-                                                                      action.liked
-                                                                          ? 'assets/Image/btn_like_2025_5_16_s.png'
-                                                                          : 'assets/Image/btn_like_2025_5_16_n.png',
-                                                                      width: 24,
-                                                                      height:
-                                                                          24,
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      width: 7,
-                                                                    ),
-                                                                    Text(
-                                                                      '${action.likeCount}',
-                                                                      style: const TextStyle(
-                                                                        color: Color(
-                                                                          0xFF999999,
-                                                                        ),
-                                                                        fontSize:
-                                                                            15,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 34,
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap:
-                                                                    () => _showImageCommentSheet(
-                                                                      context,
-                                                                      contentId,
-                                                                      action,
-                                                                    ),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Image.asset(
-                                                                      'assets/Image/btn_message_2025_5_16_n.png',
-                                                                      width: 22,
-                                                                      height:
-                                                                          22,
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      width: 7,
-                                                                    ),
-                                                                    Text(
-                                                                      '${_commentsMap[contentId]?.length ?? 0}',
-                                                                      style: const TextStyle(
-                                                                        color: Color(
-                                                                          0xFF999999,
-                                                                        ),
-                                                                        fontSize:
-                                                                            15,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  ),
                                                 ),
-                                              ],
-                                            ),
+                                              // 20px空白
+                                              const SizedBox(height: 20),
+                                              // 操作按钮区域
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 15,
+                                                ),
+                                                child: StatefulBuilder(
+                                                  builder: (
+                                                    context,
+                                                    setModalState,
+                                                  ) {
+                                                    final String contentId =
+                                                        post.images.isNotEmpty
+                                                            ? post.images[0]
+                                                            : (post.video ??
+                                                                '');
+                                                    final action =
+                                                        _imageActionMap
+                                                            .putIfAbsent(
+                                                      contentId,
+                                                      () => _ImageActionState(
+                                                        likeCount: 20,
+                                                        commentCount: 5,
+                                                      ),
+                                                    );
+                                                    return Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        // 左侧举报按钮
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              _showImageReportSheet(
+                                                            context,
+                                                            post.figure,
+                                                            contentId,
+                                                          ),
+                                                          child: Image.asset(
+                                                            'assets/Image/btn_report_2025_5_16_n.png',
+                                                            width: 24,
+                                                            height: 24,
+                                                          ),
+                                                        ),
+                                                        // 右侧点赞和评论按钮组
+                                                        Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                setModalState(
+                                                                    () {
+                                                                  action.liked =
+                                                                      !action
+                                                                          .liked;
+                                                                  action.likeCount +=
+                                                                      action.liked
+                                                                          ? 1
+                                                                          : -1;
+                                                                });
+                                                              },
+                                                              child: Row(
+                                                                children: [
+                                                                  Image.asset(
+                                                                    action.liked
+                                                                        ? 'assets/Image/btn_like_2025_5_16_s.png'
+                                                                        : 'assets/Image/btn_like_2025_5_16_n.png',
+                                                                    width: 24,
+                                                                    height: 24,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 7,
+                                                                  ),
+                                                                  Text(
+                                                                    '${action.likeCount}',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      color:
+                                                                          Color(
+                                                                        0xFF999999,
+                                                                      ),
+                                                                      fontSize:
+                                                                          15,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 34,
+                                                            ),
+                                                            GestureDetector(
+                                                              onTap: () =>
+                                                                  _showCommentDialog(
+                                                                contentId,
+                                                              ),
+                                                              child: Row(
+                                                                children: [
+                                                                  Image.asset(
+                                                                    'assets/Image/btn_message_2025_5_16_n.png',
+                                                                    width: 22,
+                                                                    height: 22,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 7,
+                                                                  ),
+                                                                  Text(
+                                                                    '${_commentsMap[contentId]?.length ?? 0}',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      color:
+                                                                          Color(
+                                                                        0xFF999999,
+                                                                      ),
+                                                                      fontSize:
+                                                                          15,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        // 20px空白
-                                        // const SizedBox(height: 20),
-                                        // 分割线
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 15,
-                                          ),
-                                          child: Container(
-                                            height: 1,
-                                            color: Color(0xFFF5F7F9),
-                                          ),
+                                      ),
+                                      // 20px空白
+                                      // const SizedBox(height: 20),
+                                      // 分割线
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 15,
                                         ),
-                                        // 23px空白
-                                        const SizedBox(height: 23),
-                                      ],
-                                    );
-                                  },
-                                ),
+                                        child: Container(
+                                          height: 1,
+                                          color: Color(0xFFF5F7F9),
+                                        ),
+                                      ),
+                                      // 23px空白
+                                      const SizedBox(height: 23),
+                                    ],
+                                  );
+                                },
+                              ),
                       ),
                     ),
                   ),
@@ -805,14 +810,13 @@ class _ExplorePageState extends State<ExplorePage> {
         height: 36,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          gradient:
-              isFollowed
-                  ? null
-                  : const LinearGradient(
-                    colors: [Color(0xFF69ACFF), Color(0xFFFF84FD)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+          gradient: isFollowed
+              ? null
+              : const LinearGradient(
+                  colors: [Color(0xFF69ACFF), Color(0xFFFF84FD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
           color: isFollowed ? const Color(0xFFE0E0E0) : null,
         ),
         alignment: Alignment.center,
@@ -848,44 +852,42 @@ class _ExplorePageState extends State<ExplorePage> {
   ) async {
     showCupertinoModalPopup(
       context: context,
-      builder:
-          (BuildContext context) => CupertinoActionSheet(
-            title: const Text('What would you like to do?'),
-            message: const Text('Choose an action for this content'),
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => ReportPage(rec: figure)),
-                  );
-                },
-                child: const Text('Report'),
-              ),
-              CupertinoActionSheetAction(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await _blockContent(figure);
-                },
-                isDestructiveAction: true,
-                child: const Text('Block & Hide'),
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('What would you like to do?'),
+        message: const Text('Choose an action for this content'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                CupertinoPageRoute(builder: (_) => ReportPage(rec: figure)),
+              );
+            },
+            child: const Text('Report'),
           ),
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _blockContent(figure);
+            },
+            isDestructiveAction: true,
+            child: const Text('Block & Hide'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+      ),
     );
   }
 
   Future<void> _refreshCurrentUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final nickname = prefs.getString('profile_nickname') ?? 'Me';
-    String avatar =
-        prefs.getString('profile_avatar') ??
+    String avatar = prefs.getString('profile_avatar') ??
         'assets/Image/applogo_2025_5_15.png';
     if (!avatar.startsWith('assets/')) {
       final dir = await getApplicationDocumentsDirectory();
@@ -897,28 +899,21 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
-  // 评论弹窗
-  void _showImageCommentSheet(
-    BuildContext context,
-    String contentId,
-    _ImageActionState action,
-  ) async {
-    await _refreshCurrentUserInfo();
-    showModalBottomSheet(
+  void _showCommentDialog(String postId) async {
+    final shouldGoToWallet = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            final comments = _commentsMap.putIfAbsent(contentId, () => []);
+            final comments = _commentsMap.putIfAbsent(postId, () => []);
             final TextEditingController _commentController =
                 TextEditingController();
-            final userComments =
-                comments.where((c) => c.userID == _currentUserId).toList();
+            final userComments = comments;
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -934,55 +929,52 @@ class _ExplorePageState extends State<ExplorePage> {
                   const Divider(),
                   SizedBox(
                     height: 220,
-                    child:
-                        userComments.isEmpty
-                            ? const Center(child: Text('No comments yet.'))
-                            : ListView.separated(
-                              itemCount: userComments.length,
-                              separatorBuilder:
-                                  (_, __) => const Divider(height: 1),
-                              itemBuilder: (context, idx) {
-                                final c = userComments[idx];
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      _currentUserAvatar,
+                    child: userComments.isEmpty
+                        ? const Center(child: Text('No comments yet.'))
+                        : ListView.separated(
+                            itemCount: userComments.length,
+                            separatorBuilder: (_, __) =>
+                                const Divider(height: 1),
+                            itemBuilder: (context, idx) {
+                              final c = userComments[idx];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage(_currentUserAvatar),
+                                  radius: 20,
+                                ),
+                                title: Text(_currentUserNickname),
+                                subtitle: Text(c.content),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setModalState(() {
+                                          c.isLiked = !c.isLiked;
+                                          c.likeCount += c.isLiked ? 1 : -1;
+                                        });
+                                      },
+                                      child: Icon(
+                                        c.isLiked
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: c.isLiked
+                                            ? Color(0xFFDB64A5)
+                                            : Colors.grey,
+                                        size: 20,
+                                      ),
                                     ),
-                                    radius: 20,
-                                  ),
-                                  title: Text(_currentUserNickname),
-                                  subtitle: Text(c.content),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setModalState(() {
-                                            c.isLiked = !c.isLiked;
-                                            c.likeCount += c.isLiked ? 1 : -1;
-                                          });
-                                        },
-                                        child: Icon(
-                                          c.isLiked
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color:
-                                              c.isLiked
-                                                  ? Color(0xFFDB64A5)
-                                                  : Colors.grey,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${c.likeCount}',
-                                        style: const TextStyle(fontSize: 13),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${c.likeCount}',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                   ),
                   const Divider(),
                   Padding(
@@ -1003,26 +995,30 @@ class _ExplorePageState extends State<ExplorePage> {
                             Icons.send,
                             color: Color(0xFFB16CEA),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             final text = _commentController.text.trim();
                             if (text.isNotEmpty) {
+                              // 发送时检测 coins
+                              final shouldGoToWallet =
+                                  await CoinsCheck.checkCoinsForComment(
+                                      context);
+                              if (shouldGoToWallet) {
+                                Navigator.of(context)
+                                    .pop(true); // 只关闭 BottomSheet 并返回标志
+                                return;
+                              }
+                              await CoinsCheck.deductCoinsForComment();
                               setModalState(() {
                                 comments.add(
                                   _Comment(
                                     userID: _currentUserId,
                                     content: text,
                                     likeCount: 0,
+                                    isLiked: false,
                                   ),
                                 );
-                                action.commentCount =
-                                    comments
-                                        .where(
-                                          (c) => c.userID == _currentUserId,
-                                        )
-                                        .length;
                                 _commentController.clear();
                               });
-                              // 刷新主页面评论数
                               if (mounted) setState(() {});
                             }
                           },
@@ -1038,6 +1034,10 @@ class _ExplorePageState extends State<ExplorePage> {
         );
       },
     );
+    if (shouldGoToWallet == true && mounted) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const WalletPage()));
+    }
   }
 }
 
@@ -1113,10 +1113,9 @@ class _TagExplorePageState extends State<TagExplorePage> {
   Future<void> _loadBlockedIdsAndFilter() async {
     final prefs = await SharedPreferences.getInstance();
     final blockedIds = prefs.getStringList('blocked_figure_ids')?.toSet() ?? {};
-    final filtered =
-        widget.posts
-            .where((p) => !blockedIds.contains(p.figure['figureID'].toString()))
-            .toList();
+    final filtered = widget.posts
+        .where((p) => !blockedIds.contains(p.figure['figureID'].toString()))
+        .toList();
     // 为每条内容初始化随机点赞数（0~20）
     final rand = Random();
     for (var post in filtered) {
@@ -1145,36 +1144,35 @@ class _TagExplorePageState extends State<TagExplorePage> {
   ) async {
     showCupertinoModalPopup(
       context: context,
-      builder:
-          (BuildContext context) => CupertinoActionSheet(
-            title: const Text('What would you like to do?'),
-            message: const Text('Choose an action for this content'),
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => ReportPage(rec: figure)),
-                  );
-                },
-                child: const Text('Report'),
-              ),
-              CupertinoActionSheetAction(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await _blockContent(figure);
-                },
-                isDestructiveAction: true,
-                child: const Text('Block & Hide'),
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('What would you like to do?'),
+        message: const Text('Choose an action for this content'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                CupertinoPageRoute(builder: (_) => ReportPage(rec: figure)),
+              );
+            },
+            child: const Text('Report'),
           ),
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _blockContent(figure);
+            },
+            isDestructiveAction: true,
+            child: const Text('Block & Hide'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+      ),
     );
   }
 
@@ -1183,14 +1181,14 @@ class _TagExplorePageState extends State<TagExplorePage> {
     String contentId,
     _ImageActionState action,
   ) async {
-    showModalBottomSheet(
+    final shouldGoToWallet = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setModalState) {
             final comments = widget.commentsMap.putIfAbsent(
@@ -1199,10 +1197,9 @@ class _TagExplorePageState extends State<TagExplorePage> {
             );
             final TextEditingController _commentController =
                 TextEditingController();
-            final userComments =
-                comments
-                    .where((c) => c.userID == widget.currentUserId)
-                    .toList();
+            final userComments = comments
+                .where((c) => c.userID == widget.currentUserId)
+                .toList();
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -1218,55 +1215,53 @@ class _TagExplorePageState extends State<TagExplorePage> {
                   const Divider(),
                   SizedBox(
                     height: 220,
-                    child:
-                        userComments.isEmpty
-                            ? const Center(child: Text('No comments yet.'))
-                            : ListView.separated(
-                              itemCount: userComments.length,
-                              separatorBuilder:
-                                  (_, __) => const Divider(height: 1),
-                              itemBuilder: (context, idx) {
-                                final c = userComments[idx];
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      widget.currentUserAvatar,
+                    child: userComments.isEmpty
+                        ? const Center(child: Text('No comments yet.'))
+                        : ListView.separated(
+                            itemCount: userComments.length,
+                            separatorBuilder: (_, __) =>
+                                const Divider(height: 1),
+                            itemBuilder: (context, idx) {
+                              final c = userComments[idx];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                    widget.currentUserAvatar,
+                                  ),
+                                  radius: 20,
+                                ),
+                                title: Text(widget.currentUserNickname),
+                                subtitle: Text(c.content),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setModalState(() {
+                                          c.isLiked = !c.isLiked;
+                                          c.likeCount += c.isLiked ? 1 : -1;
+                                        });
+                                      },
+                                      child: Icon(
+                                        c.isLiked
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: c.isLiked
+                                            ? Color(0xFFDB64A5)
+                                            : Colors.grey,
+                                        size: 20,
+                                      ),
                                     ),
-                                    radius: 20,
-                                  ),
-                                  title: Text(widget.currentUserNickname),
-                                  subtitle: Text(c.content),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setModalState(() {
-                                            c.isLiked = !c.isLiked;
-                                            c.likeCount += c.isLiked ? 1 : -1;
-                                          });
-                                        },
-                                        child: Icon(
-                                          c.isLiked
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color:
-                                              c.isLiked
-                                                  ? Color(0xFFDB64A5)
-                                                  : Colors.grey,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${c.likeCount}',
-                                        style: const TextStyle(fontSize: 13),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${c.likeCount}',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                   ),
                   const Divider(),
                   Padding(
@@ -1287,24 +1282,33 @@ class _TagExplorePageState extends State<TagExplorePage> {
                             Icons.send,
                             color: Color(0xFFB16CEA),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             final text = _commentController.text.trim();
                             if (text.isNotEmpty) {
+                              // 发送时检测 coins
+                              final shouldGoToWallet =
+                                  await CoinsCheck.checkCoinsForComment(
+                                      context);
+                              if (shouldGoToWallet) {
+                                Navigator.of(context)
+                                    .pop(true); // 只关闭 BottomSheet 并返回标志
+                                return;
+                              }
+                              await CoinsCheck.deductCoinsForComment();
                               setModalState(() {
                                 comments.add(
                                   _Comment(
                                     userID: widget.currentUserId,
                                     content: text,
                                     likeCount: 0,
+                                    isLiked: false,
                                   ),
                                 );
-                                action.commentCount =
-                                    comments
-                                        .where(
-                                          (c) =>
-                                              c.userID == widget.currentUserId,
-                                        )
-                                        .length;
+                                action.commentCount = comments
+                                    .where(
+                                      (c) => c.userID == widget.currentUserId,
+                                    )
+                                    .length;
                                 _commentController.clear();
                               });
                               if (mounted) setState(() {});
@@ -1322,6 +1326,10 @@ class _TagExplorePageState extends State<TagExplorePage> {
         );
       },
     );
+    if (shouldGoToWallet == true && mounted) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const WalletPage()));
+    }
   }
 
   String _formatTimeSmart(DateTime dt) {
@@ -1370,13 +1378,11 @@ class _TagExplorePageState extends State<TagExplorePage> {
           final action = _actionMap.putIfAbsent(
             post.images.isNotEmpty ? post.images[0] : (post.video ?? ''),
             () => _ImageActionState(
-              likeCount:
-                  _likeCountMap[post.images.isNotEmpty
+              likeCount: _likeCountMap[post.images.isNotEmpty
                       ? post.images[0]
                       : (post.video ?? '')] ??
                   0,
-              commentCount:
-                  widget
+              commentCount: widget
                       .commentsMap[post.images.isNotEmpty
                           ? post.images[0]
                           : (post.video ?? '')]
@@ -1424,26 +1430,24 @@ class _TagExplorePageState extends State<TagExplorePage> {
                         ),
                         const Spacer(),
                         GestureDetector(
-                          onTap:
-                              () => widget.onToggleFollow(
-                                figure['figureID'].toString(),
-                              ),
+                          onTap: () => widget.onToggleFollow(
+                            figure['figureID'].toString(),
+                          ),
                           child: Container(
                             width: 90,
                             height: 36,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(18),
-                              gradient:
-                                  isFollowed
-                                      ? null
-                                      : const LinearGradient(
-                                        colors: [
-                                          Color(0xFF69ACFF),
-                                          Color(0xFFFF84FD),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
+                              gradient: isFollowed
+                                  ? null
+                                  : const LinearGradient(
+                                      colors: [
+                                        Color(0xFF69ACFF),
+                                        Color(0xFFFF84FD),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
                               color:
                                   isFollowed ? const Color(0xFFE0E0E0) : null,
                             ),
@@ -1451,10 +1455,9 @@ class _TagExplorePageState extends State<TagExplorePage> {
                             child: Text(
                               isFollowed ? 'Followed' : 'Follow',
                               style: TextStyle(
-                                color:
-                                    isFollowed
-                                        ? Color(0xFF888888)
-                                        : Colors.white,
+                                color: isFollowed
+                                    ? Color(0xFF888888)
+                                    : Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -1475,33 +1478,31 @@ class _TagExplorePageState extends State<TagExplorePage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: Row(
-                          children:
-                              post.images.map((img) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder:
-                                              (_) => FullScreenImageViewer(
-                                                imagePath: img,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(
-                                        img,
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover,
+                          children: post.images.map((img) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => FullScreenImageViewer(
+                                        imagePath: img,
                                       ),
                                     ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    img,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ),
                     if (post.video != null)
@@ -1511,10 +1512,9 @@ class _TagExplorePageState extends State<TagExplorePage> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder:
-                                    (_) => FullScreenVideoPlayer(
-                                      videoPath: post.video!,
-                                    ),
+                                builder: (_) => FullScreenVideoPlayer(
+                                  videoPath: post.video!,
+                                ),
                               ),
                             );
                           },
@@ -1526,23 +1526,22 @@ class _TagExplorePageState extends State<TagExplorePage> {
                                   width: 160,
                                   height: 96,
                                   color: Colors.black12,
-                                  child:
-                                      post.videoCoverBytes != null
-                                          ? Image.memory(
-                                            post.videoCoverBytes!,
-                                            width: 160,
-                                            height: 96,
-                                            fit: BoxFit.cover,
-                                          )
-                                          : Center(
-                                            child: SizedBox(
-                                              width: 32,
-                                              height: 32,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
+                                  child: post.videoCoverBytes != null
+                                      ? Image.memory(
+                                          post.videoCoverBytes!,
+                                          width: 160,
+                                          height: 96,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Center(
+                                          child: SizedBox(
+                                            width: 32,
+                                            height: 32,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
                                             ),
                                           ),
+                                        ),
                                 ),
                               ),
                               Positioned.fill(
@@ -1566,10 +1565,9 @@ class _TagExplorePageState extends State<TagExplorePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: StatefulBuilder(
                   builder: (context, setModalState) {
-                    final String contentId =
-                        post.images.isNotEmpty
-                            ? post.images[0]
-                            : (post.video ?? '');
+                    final String contentId = post.images.isNotEmpty
+                        ? post.images[0]
+                        : (post.video ?? '');
                     final commentCount =
                         widget.commentsMap[contentId]?.length ?? 0;
                     final action = _actionMap.putIfAbsent(
@@ -1584,12 +1582,11 @@ class _TagExplorePageState extends State<TagExplorePage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap:
-                              () => _showImageReportSheet(
-                                context,
-                                post.figure,
-                                contentId,
-                              ),
+                          onTap: () => _showImageReportSheet(
+                            context,
+                            post.figure,
+                            contentId,
+                          ),
                           child: Image.asset(
                             'assets/Image/btn_report_2025_5_16_n.png',
                             width: 24,
@@ -1627,12 +1624,11 @@ class _TagExplorePageState extends State<TagExplorePage> {
                             ),
                             const SizedBox(width: 34),
                             GestureDetector(
-                              onTap:
-                                  () => _showImageCommentSheet(
-                                    context,
-                                    contentId,
-                                    action,
-                                  ),
+                              onTap: () => _showImageCommentSheet(
+                                context,
+                                contentId,
+                                action,
+                              ),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -1685,11 +1681,18 @@ class _ChatPageState extends State<ChatPage> {
   List<Map<String, dynamic>> _hotFigures = [];
   List<_ContactItem> _contacts = [];
   bool _loading = true;
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _initData();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _initData() async {
@@ -1718,8 +1721,7 @@ class _ChatPageState extends State<ChatPage> {
             _ContactItem(
               figure: figure,
               lastMsg: lastMsg['content'] ?? '',
-              lastTime:
-                  DateTime.tryParse(lastMsg['time'] ?? '') ??
+              lastTime: DateTime.tryParse(lastMsg['time'] ?? '') ??
                   DateTime.fromMillisecondsSinceEpoch(0),
             ),
           );
@@ -1734,7 +1736,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _openChat(Map<String, dynamic> figure) {
+  void _openChat(Map<String, dynamic> figure) async {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => RoleChatPage(figure: figure)))
         .then((_) => _initData()); // 聊天后刷新
@@ -1825,18 +1827,24 @@ class _ChatPageState extends State<ChatPage> {
                                 horizontal: 16,
                               ),
                               itemCount: _hotFigures.length,
-                              separatorBuilder:
-                                  (_, __) => const SizedBox(width: 18),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 18),
                               itemBuilder: (context, idx) {
                                 final f = _hotFigures[idx];
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder:
-                                            (_) => FigureProfilePage(figure: f),
-                                      ),
-                                    );
+                                  onTap: () async {
+                                    final hasPermission =
+                                        await VipCheck.checkVipPermission(
+                                            context,
+                                            VipPermissions.canViewDetails);
+                                    if (hasPermission) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              FigureProfilePage(figure: f),
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: SizedBox(
                                     width: avatarSize + 10,
@@ -1929,84 +1937,83 @@ class _ChatPageState extends State<ChatPage> {
                 Expanded(
                   child: Container(
                     color: Colors.white,
-                    child:
-                        _loading
-                            ? Center(child: CircularProgressIndicator())
-                            : (_contacts.isEmpty
-                                ? _buildNoContactView()
-                                : ListView.separated(
-                                  padding: const EdgeInsets.only(
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0,
-                                  ),
-                                  itemCount: _contacts.length,
-                                  separatorBuilder:
-                                      (_, __) => const SizedBox(height: 2),
-                                  itemBuilder: (context, idx) {
-                                    final c = _contacts[idx];
-                                    return ListTile(
-                                      onTap: () => _openChat(c.figure),
-                                      leading: Stack(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 26,
-                                            backgroundImage: AssetImage(
-                                              c.figure['figureRecommendHeaderIcon'] ??
-                                                  'assets/Image/applogo_2025_5_15.png',
-                                            ),
+                    child: _loading
+                        ? Center(child: CircularProgressIndicator())
+                        : (_contacts.isEmpty
+                            ? _buildNoContactView()
+                            : ListView.separated(
+                                padding: const EdgeInsets.only(
+                                  left: 0,
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                ),
+                                itemCount: _contacts.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 2),
+                                itemBuilder: (context, idx) {
+                                  final c = _contacts[idx];
+                                  return ListTile(
+                                    onTap: () => _openChat(c.figure),
+                                    leading: Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 26,
+                                          backgroundImage: AssetImage(
+                                            c.figure[
+                                                    'figureRecommendHeaderIcon'] ??
+                                                'assets/Image/applogo_2025_5_15.png',
                                           ),
-                                          Positioned(
-                                            right: 2,
-                                            top: 2,
-                                            child: Container(
-                                              width: 10,
-                                              height: 10,
-                                              decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
+                                        ),
+                                        Positioned(
+                                          right: 2,
+                                          top: 2,
+                                          child: Container(
+                                            width: 10,
+                                            height: 10,
+                                            decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
                                               ),
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      title: Text(
-                                        c.figure['figureNickname'] ?? '',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Color(0xFF2B1A2F),
                                         ),
+                                      ],
+                                    ),
+                                    title: Text(
+                                      c.figure['figureNickname'] ?? '',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Color(0xFF2B1A2F),
                                       ),
-                                      subtitle: Text(
-                                        c.lastMsg,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Color(0xFF888888),
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                    ),
+                                    subtitle: Text(
+                                      c.lastMsg,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Color(0xFF888888),
                                       ),
-                                      trailing: Text(
-                                        _formatTimeSmart(c.lastTime),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFFB0B0B0),
-                                        ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    trailing: Text(
+                                      _formatTimeSmart(c.lastTime),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFFB0B0B0),
                                       ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 8,
-                                          ),
-                                    );
-                                  },
-                                )),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 8,
+                                    ),
+                                  );
+                                },
+                              )),
                   ),
                 ),
               ],
@@ -2117,8 +2124,12 @@ class MainTabPage extends StatefulWidget {
 class _MainTabPageState extends State<MainTabPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    RecommendPage(),
+  // 新增：RecommendPage的GlobalKey
+  final GlobalKey<RecommendPageState> _recommendPageKey =
+      GlobalKey<RecommendPageState>();
+
+  late final List<Widget> _pages = [
+    RecommendPage(key: _recommendPageKey),
     ExplorePage(),
     ChatPage(),
     ProfilePage(),
@@ -2166,6 +2177,10 @@ class _MainTabPageState extends State<MainTabPage> {
         showUnselectedLabels: false,
         currentIndex: _selectedIndex,
         onTap: (index) {
+          // 新增：切换离开RecommendPage时暂停视频
+          if (_selectedIndex == 0 && index != 0) {
+            _recommendPageKey.currentState?.pauseCurrentVideo();
+          }
           setState(() {
             _selectedIndex = index;
           });
@@ -2185,7 +2200,7 @@ class _MainTabPageState extends State<MainTabPage> {
 class FullScreenImageViewer extends StatelessWidget {
   final String imagePath;
   const FullScreenImageViewer({Key? key, required this.imagePath})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

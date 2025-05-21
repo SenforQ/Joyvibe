@@ -46,8 +46,7 @@ class _RoleChatPageState extends State<RoleChatPage> {
 
   Future<void> _initProfileAndHistory() async {
     final prefs = await SharedPreferences.getInstance();
-    final avatar =
-        prefs.getString('profile_avatar') ??
+    final avatar = prefs.getString('profile_avatar') ??
         'assets/Image/applogo_2025_5_15.png';
     final name = prefs.getString('profile_nickname') ?? 'Me';
     final dir = await getApplicationDocumentsDirectory();
@@ -182,13 +181,16 @@ class _RoleChatPageState extends State<RoleChatPage> {
   Widget _buildMessage(Map<String, dynamic> msg) {
     final isMe = msg['sender'] == 'me';
     final isBlocked = _isBlocked(widget.figure['figureID']);
-    final avatar =
-        isMe
-            ? (_myAvatar != null && !_myAvatar!.startsWith('assets/')
-                ? FileImage(File('${_appDocPath ?? ''}/${_myAvatar}'))
-                : AssetImage(_myAvatar ?? 'assets/Image/applogo_2025_5_15.png'))
-            : AssetImage(widget.figure['figureRecommendHeaderIcon'] ?? '');
-    final name = isMe ? _myName ?? 'Me' : widget.figure['figureNickname'] ?? '';
+    final screenWidth = MediaQuery.of(context).size.width;
+    final avatar = isMe
+        ? (_myAvatar != null && !_myAvatar!.startsWith('assets/')
+            ? FileImage(File('${_appDocPath ?? ''}/${_myAvatar}'))
+            : AssetImage(_myAvatar ?? 'assets/Image/applogo_2025_5_15.png'))
+        : AssetImage(widget.figure['figureRecommendHeaderIcon'] ??
+            'assets/Image/applogo_2025_5_15.png');
+    final name =
+        isMe ? _myName ?? 'Me' : widget.figure['figureNickname'] ?? 'AI';
+
     // 图片消息
     if (msg['type'] == 'image') {
       return Padding(
@@ -198,6 +200,7 @@ class _RoleChatPageState extends State<RoleChatPage> {
               isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (!isMe) const SizedBox(width: 8),
             if (!isMe)
               CircleAvatar(
                 radius: 22,
@@ -208,25 +211,25 @@ class _RoleChatPageState extends State<RoleChatPage> {
               onTap: () {
                 showDialog(
                   context: context,
-                  builder:
-                      (_) => Dialog(
-                        backgroundColor: Colors.transparent,
-                        child: GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: InteractiveViewer(
-                            child: Image.asset(
-                              msg['content'],
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+                  builder: (_) => Dialog(
+                    backgroundColor: Colors.transparent,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: InteractiveViewer(
+                        child: Image.asset(
+                          msg['content'] ??
+                              'assets/Image/applogo_2025_5_15.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
+                    ),
+                  ),
                 );
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  msg['content'],
+                  msg['content'] ?? 'assets/Image/applogo_2025_5_15.png',
                   width: 160,
                   height: 160,
                   fit: BoxFit.cover,
@@ -236,9 +239,7 @@ class _RoleChatPageState extends State<RoleChatPage> {
             if (isMe) const SizedBox(width: 8),
             if (isMe)
               CircleAvatar(
-                radius: 22,
-                backgroundImage: avatar as ImageProvider,
-              ),
+                  radius: 22, backgroundImage: avatar as ImageProvider),
           ],
         ),
       );
@@ -260,12 +261,14 @@ class _RoleChatPageState extends State<RoleChatPage> {
             if (!isMe) const SizedBox(width: 8),
             GestureDetector(
               onTap: () async {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder:
-                        (_) => FullScreenVideoPlayer(videoPath: msg['content']),
-                  ),
-                );
+                if (msg['content'] != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          FullScreenVideoPlayer(videoPath: msg['content']),
+                    ),
+                  );
+                }
               },
               child: Container(
                 width: 160,
@@ -279,15 +282,14 @@ class _RoleChatPageState extends State<RoleChatPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child:
-                          msg['cover'] != null && msg['cover'] is Uint8List
-                              ? Image.memory(
-                                msg['cover'],
-                                width: 160,
-                                height: 160,
-                                fit: BoxFit.cover,
-                              )
-                              : Container(color: Colors.black12),
+                      child: msg['cover'] != null && msg['cover'] is Uint8List
+                          ? Image.memory(
+                              msg['cover'],
+                              width: 160,
+                              height: 160,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(color: Colors.black12),
                     ),
                     const Icon(
                       Icons.play_circle_fill,
@@ -323,10 +325,9 @@ class _RoleChatPageState extends State<RoleChatPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color:
-                    isMe
-                        ? const Color(0xFFF9CFE6)
-                        : isBlocked
+                color: isMe
+                    ? const Color(0xFFF9CFE6)
+                    : isBlocked
                         ? const Color(0xFFE0E0E0)
                         : Colors.white,
                 borderRadius: BorderRadius.only(
@@ -345,12 +346,11 @@ class _RoleChatPageState extends State<RoleChatPage> {
                 ],
               ),
               child: Text(
-                msg['content'],
+                msg['content'] ?? '', // 添加空值处理
                 style: TextStyle(
-                  color:
-                      isMe
-                          ? Colors.black87
-                          : isBlocked
+                  color: isMe
+                      ? Colors.black87
+                      : isBlocked
                           ? const Color(0xFF888888)
                           : Colors.black87,
                   fontSize: 17,
@@ -408,23 +408,22 @@ class _RoleChatPageState extends State<RoleChatPage> {
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder:
-                    (context) => AlertDialog(
-                      title: const Text('Delete Chat'),
-                      content: const Text(
-                        'Are you sure you want to delete all chat history with this role?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Delete'),
-                        ),
-                      ],
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete Chat'),
+                  content: const Text(
+                    'Are you sure you want to delete all chat history with this role?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
                     ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
               );
               if (confirm == true) {
                 final prefs = await SharedPreferences.getInstance();
@@ -446,45 +445,42 @@ class _RoleChatPageState extends State<RoleChatPage> {
             onPressed: () {
               showCupertinoModalPopup(
                 context: context,
-                builder:
-                    (context) => CupertinoActionSheet(
-                      title: const Text('More'),
-                      actions: [
-                        CupertinoActionSheetAction(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ReportPage(rec: widget.figure),
-                              ),
-                            );
-                          },
-                          child: const Text('Report'),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            await _toggleBlock(figure['figureID']);
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.setStringList(
-                              'blocked_role_ids',
-                              _blockedIds.toList(),
-                            );
-                            setState(() {});
-                          },
-                          isDestructiveAction: _isBlocked(figure['figureID']),
-                          child: Text(
-                            _isBlocked(figure['figureID'])
-                                ? 'Unblock'
-                                : 'Block',
+                builder: (context) => CupertinoActionSheet(
+                  title: const Text('More'),
+                  actions: [
+                    CupertinoActionSheetAction(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ReportPage(rec: widget.figure),
                           ),
-                        ),
-                      ],
-                      cancelButton: CupertinoActionSheetAction(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                        );
+                      },
+                      child: const Text('Report'),
+                    ),
+                    CupertinoActionSheetAction(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        await _toggleBlock(figure['figureID']);
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setStringList(
+                          'blocked_role_ids',
+                          _blockedIds.toList(),
+                        );
+                        setState(() {});
+                      },
+                      isDestructiveAction: _isBlocked(figure['figureID']),
+                      child: Text(
+                        _isBlocked(figure['figureID']) ? 'Unblock' : 'Block',
                       ),
                     ),
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                ),
               );
             },
           ),
@@ -532,28 +528,25 @@ class _RoleChatPageState extends State<RoleChatPage> {
                       _buildMediaButton(
                         icon: Icons.image,
                         label: 'Request Image',
-                        onTap:
-                            _isBlocked(widget.figure['figureID'])
-                                ? null
-                                : () => _requestMedia('image'),
+                        onTap: _isBlocked(widget.figure['figureID'])
+                            ? null
+                            : () => _requestMedia('image'),
                       ),
                       const SizedBox(width: 8),
                       _buildMediaButton(
                         icon: Icons.videocam,
                         label: 'Request Video',
-                        onTap:
-                            _isBlocked(widget.figure['figureID'])
-                                ? null
-                                : () => _requestMedia('video'),
+                        onTap: _isBlocked(widget.figure['figureID'])
+                            ? null
+                            : () => _requestMedia('video'),
                       ),
                       const SizedBox(width: 8),
                       _buildMediaButton(
                         icon: Icons.call,
                         label: 'Voice Call',
-                        onTap:
-                            _isBlocked(widget.figure['figureID'])
-                                ? null
-                                : _requestCall,
+                        onTap: _isBlocked(widget.figure['figureID'])
+                            ? null
+                            : _requestCall,
                       ),
                     ],
                   ),
@@ -575,10 +568,9 @@ class _RoleChatPageState extends State<RoleChatPage> {
                             controller: _controller,
                             enabled: !_isBlocked(widget.figure['figureID']),
                             decoration: InputDecoration(
-                              hintText:
-                                  _isBlocked(widget.figure['figureID'])
-                                      ? 'Blocked, unable to send message'
-                                      : 'Say something...',
+                              hintText: _isBlocked(widget.figure['figureID'])
+                                  ? 'Blocked, unable to send message'
+                                  : 'Say something...',
                               border: InputBorder.none,
                               isDense: true,
                             ),
@@ -593,51 +585,47 @@ class _RoleChatPageState extends State<RoleChatPage> {
                       ),
                       const SizedBox(width: 10),
                       GestureDetector(
-                        onTap:
-                            _loading || _isBlocked(widget.figure['figureID'])
-                                ? null
-                                : () => _sendMessage(_controller.text),
+                        onTap: _loading || _isBlocked(widget.figure['figureID'])
+                            ? null
+                            : () => _sendMessage(_controller.text),
                         child: Container(
                           width: 88,
                           height: 40,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             gradient: LinearGradient(
-                              colors:
-                                  _isBlocked(widget.figure['figureID'])
-                                      ? [
-                                        const Color(0xFFCCCCCC),
-                                        const Color(0xFFCCCCCC),
-                                      ]
-                                      : [
-                                        const Color(0xFFB16CEA),
-                                        const Color(0xFFF9CFE6),
-                                      ],
+                              colors: _isBlocked(widget.figure['figureID'])
+                                  ? [
+                                      const Color(0xFFCCCCCC),
+                                      const Color(0xFFCCCCCC),
+                                    ]
+                                  : [
+                                      const Color(0xFFB16CEA),
+                                      const Color(0xFFF9CFE6),
+                                    ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                           ),
                           alignment: Alignment.center,
-                          child:
-                              _loading
-                                  ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                  : Text(
-                                    'Send',
-                                    style: TextStyle(
-                                      color:
-                                          _isBlocked(widget.figure['figureID'])
-                                              ? Colors.white70
-                                              : Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
+                          child: _loading
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
                                   ),
+                                )
+                              : Text(
+                                  'Send',
+                                  style: TextStyle(
+                                    color: _isBlocked(widget.figure['figureID'])
+                                        ? Colors.white70
+                                        : Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -713,23 +701,22 @@ class _RoleChatPageState extends State<RoleChatPage> {
   Future<void> _requestMedia(String type) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Request ${type == 'image' ? 'Image' : 'Video'}'),
-            content: const Text(
-              'The other party needs to agree before sending. Continue?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Request'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('Request ${type == 'image' ? 'Image' : 'Video'}'),
+        content: const Text(
+          'The other party needs to agree before sending. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Request'),
+          ),
+        ],
+      ),
     );
     if (confirm != true) return;
     // 1. 先插入"用户"请求消息
@@ -798,23 +785,22 @@ class _RoleChatPageState extends State<RoleChatPage> {
   void _requestCall() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Voice Call'),
-            content: const Text(
-              'The other party needs to agree before starting a call. Continue?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Request'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Voice Call'),
+        content: const Text(
+          'The other party needs to agree before starting a call. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Request'),
+          ),
+        ],
+      ),
     );
     if (confirm == true) {
       // 1. 先插入"用户"请求消息
@@ -851,7 +837,7 @@ class _RoleChatPageState extends State<RoleChatPage> {
 class FullScreenVideoPlayer extends StatefulWidget {
   final String videoPath;
   const FullScreenVideoPlayer({Key? key, required this.videoPath})
-    : super(key: key);
+      : super(key: key);
   @override
   State<FullScreenVideoPlayer> createState() => _FullScreenVideoPlayerState();
 }
@@ -888,13 +874,12 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
       body: Stack(
         children: [
           Center(
-            child:
-                _controller.value.isInitialized
-                    ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    )
-                    : const CircularProgressIndicator(),
+            child: _controller.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  )
+                : const CircularProgressIndicator(),
           ),
           // 顶部关闭按钮
           Positioned(

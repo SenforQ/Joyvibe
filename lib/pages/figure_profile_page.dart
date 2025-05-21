@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'role_chat_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'vip_page.dart';
 
 class FigureProfilePage extends StatefulWidget {
   final Map<String, dynamic> figure;
@@ -14,11 +15,48 @@ class FigureProfilePage extends StatefulWidget {
 class _FigureProfilePageState extends State<FigureProfilePage> {
   bool _isFollowed = false;
   Set<String> _followedIds = {};
+  bool _hasVipPermission = false;
 
   @override
   void initState() {
     super.initState();
     _loadFollowState();
+    _checkVipPermission();
+  }
+
+  Future<void> _checkVipPermission() async {
+    final hasPermission =
+        await VipPermissions.hasVipPermission(VipPermissions.canViewDetails);
+    setState(() {
+      _hasVipPermission = hasPermission;
+    });
+  }
+
+  Future<void> _showVipRequiredDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('VIP Required'),
+        content: const Text(
+            'You need VIP to view character details. Would you like to become a VIP?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VipPage()),
+              );
+            },
+            child: const Text('Get VIP'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadFollowState() async {
@@ -70,11 +108,15 @@ class _FigureProfilePageState extends State<FigureProfilePage> {
                   children: [
                     // 顶部大图
                     if (topPhoto.isNotEmpty)
-                      Image.asset(
-                        topPhoto,
-                        width: screenWidth,
-                        height: topImageHeight,
-                        fit: BoxFit.cover,
+                      GestureDetector(
+                        onTap:
+                            !_hasVipPermission ? _showVipRequiredDialog : null,
+                        child: Image.asset(
+                          topPhoto,
+                          width: screenWidth,
+                          height: topImageHeight,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     // 返回按钮（使用SafeArea包裹）
                     Positioned(
@@ -98,12 +140,15 @@ class _FigureProfilePageState extends State<FigureProfilePage> {
                 // 头像悬浮在大图下方
                 Transform.translate(
                   offset: Offset(0, -avatarRadius),
-                  child: CircleAvatar(
-                    radius: avatarRadius,
-                    backgroundColor: Colors.white,
+                  child: GestureDetector(
+                    onTap: !_hasVipPermission ? _showVipRequiredDialog : null,
                     child: CircleAvatar(
-                      radius: avatarRadius - 4,
-                      backgroundImage: AssetImage(avatar),
+                      radius: avatarRadius,
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: avatarRadius - 4,
+                        backgroundImage: AssetImage(avatar),
+                      ),
                     ),
                   ),
                 ),

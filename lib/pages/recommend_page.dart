@@ -12,15 +12,19 @@ import 'package:joyvibe/models/comment.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'figure_profile_page.dart';
+import '../utils/vip_check.dart';
+import 'vip_page.dart';
+import '../utils/coins_check.dart';
+import 'wallet_page.dart';
 
 class RecommendPage extends StatefulWidget {
   const RecommendPage({Key? key}) : super(key: key);
 
   @override
-  State<RecommendPage> createState() => _RecommendPageState();
+  State<RecommendPage> createState() => RecommendPageState();
 }
 
-class _RecommendPageState extends State<RecommendPage> {
+class RecommendPageState extends State<RecommendPage> {
   List<Map<String, dynamic>> _recommendList = [];
   List<Map<String, dynamic>> _avatarList = [];
   bool _loading = true;
@@ -32,6 +36,7 @@ class _RecommendPageState extends State<RecommendPage> {
   Set<String> _blockedFigureIds = {};
   Map<int, List<Comment>> _commentsMap = {};
   Set<String> _blockedUserIds = {};
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -85,7 +90,7 @@ class _RecommendPageState extends State<RecommendPage> {
     }
   }
 
-  void _pauseCurrentVideo() {
+  void pauseCurrentVideo() {
     if (_currentPlayingVideo != null) {
       _videoControllers[_currentPlayingVideo]?.pause();
       _currentPlayingVideo = null;
@@ -111,36 +116,35 @@ class _RecommendPageState extends State<RecommendPage> {
   ) {
     return showCupertinoModalPopup(
       context: context,
-      builder:
-          (BuildContext context) => CupertinoActionSheet(
-            title: const Text('What would you like to do?'),
-            message: const Text('Choose an action for this content'),
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => ReportPage(rec: rec)),
-                  );
-                },
-                child: const Text('Report'),
-              ),
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _blockContent(rec);
-                },
-                isDestructiveAction: true,
-                child: const Text('Block & Hide'),
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('What would you like to do?'),
+        message: const Text('Choose an action for this content'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                CupertinoPageRoute(builder: (_) => ReportPage(rec: rec)),
+              );
+            },
+            child: const Text('Report'),
           ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              _blockContent(rec);
+            },
+            isDestructiveAction: true,
+            child: const Text('Block & Hide'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+      ),
     );
   }
 
@@ -164,27 +168,25 @@ class _RecommendPageState extends State<RecommendPage> {
         _error = null;
       });
 
-      final String jsonStr = await rootBundle
-          .loadString('assets/Image/chat/figures.json')
-          .timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              throw TimeoutException('Loading data timed out');
-            },
-          );
+      final String jsonStr =
+          await rootBundle.loadString('assets/Image/chat/figures.json').timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException('Loading data timed out');
+        },
+      );
 
       final List figures = json.decode(jsonStr);
       figures.shuffle(Random());
 
       // 过滤掉被拉黑的内容
-      final List<Map<String, dynamic>> filteredFigures =
-          figures
-              .where(
-                (figure) =>
-                    !_blockedFigureIds.contains(figure['figureID'].toString()),
-              )
-              .map((e) => Map<String, dynamic>.from(e))
-              .toList();
+      final List<Map<String, dynamic>> filteredFigures = figures
+          .where(
+            (figure) =>
+                !_blockedFigureIds.contains(figure['figureID'].toString()),
+          )
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
 
       final List<Map<String, dynamic>> recommendList =
           filteredFigures.take(10).toList();
@@ -208,7 +210,7 @@ class _RecommendPageState extends State<RecommendPage> {
             prefs.getBool('recommend_like_state_${rec['figureID']}') ?? false;
         rec['likeCount'] =
             prefs.getInt('recommend_like_count_${rec['figureID']}') ??
-            (20 + Random().nextInt(10));
+                (20 + Random().nextInt(10));
         // 评论数直接取真实数据
         rec['commentCount'] = _commentsMap[rec['figureID']]?.length ?? 0;
 
@@ -264,59 +266,57 @@ class _RecommendPageState extends State<RecommendPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
-      body:
-          _loading
-              ? const Center(child: CircularProgressIndicator())
-              : Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Image.asset(
-                      'assets/Image/top_bg_2025_5_16.png',
-                      width: screenWidth,
-                      fit: BoxFit.cover,
-                    ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Image.asset(
+                    'assets/Image/top_bg_2025_5_16.png',
+                    width: screenWidth,
+                    fit: BoxFit.cover,
                   ),
-                  SafeArea(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 32, 16, 20),
-                          child: Text(
-                            'RECOMMEND',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                ),
+                SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 32, 16, 20),
+                        child: Text(
+                          'RECOMMEND',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
-                        Expanded(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            itemCount: _recommendList.length + 1,
-                            separatorBuilder:
-                                (_, idx) => const SizedBox(height: 20),
-                            itemBuilder: (context, idx) {
-                              if (idx == 1) {
-                                return _buildAvatarList();
-                              }
-                              final rec =
-                                  idx == 0
-                                      ? _recommendList[0]
-                                      : _recommendList[idx - 1];
-                              return _buildRecommendCard(rec, screenWidth);
-                            },
-                          ),
+                      ),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          itemCount: _recommendList.length + 1,
+                          separatorBuilder: (_, idx) =>
+                              const SizedBox(height: 20),
+                          itemBuilder: (context, idx) {
+                            if (idx == 1) {
+                              return _buildAvatarList();
+                            }
+                            final rec = idx == 0
+                                ? _recommendList[0]
+                                : _recommendList[idx - 1];
+                            return _buildRecommendCard(rec, screenWidth);
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -358,21 +358,20 @@ class _RecommendPageState extends State<RecommendPage> {
                       child: Container(
                         color: Colors.black12,
                         height: 300,
-                        child:
-                            videoController?.value.isInitialized == true
-                                ? Container(
-                                  color: Colors.black,
-                                  child: Center(
-                                    child: AspectRatio(
-                                      aspectRatio:
-                                          videoController!.value.aspectRatio,
-                                      child: VideoPlayer(videoController),
-                                    ),
+                        child: videoController?.value.isInitialized == true
+                            ? Container(
+                                color: Colors.black,
+                                child: Center(
+                                  child: AspectRatio(
+                                    aspectRatio:
+                                        videoController!.value.aspectRatio,
+                                    child: VideoPlayer(videoController),
                                   ),
-                                )
-                                : const Center(
-                                  child: CircularProgressIndicator(),
                                 ),
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                       ),
                     ),
                   ),
@@ -382,13 +381,17 @@ class _RecommendPageState extends State<RecommendPage> {
                   left: 16,
                   top: 16,
                   child: GestureDetector(
-                    onTap: () {
-                      _pauseCurrentVideo();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => FigureProfilePage(figure: rec),
-                        ),
-                      );
+                    onTap: () async {
+                      pauseCurrentVideo();
+                      final hasPermission = await VipCheck.checkVipPermission(
+                          context, VipPermissions.canViewDetails);
+                      if (hasPermission) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => FigureProfilePage(figure: rec),
+                          ),
+                        );
+                      }
                     },
                     child: Row(
                       children: [
@@ -500,13 +503,17 @@ class _RecommendPageState extends State<RecommendPage> {
         itemBuilder: (context, index) {
           final avatar = _avatarList[index];
           return GestureDetector(
-            onTap: () {
-              _pauseCurrentVideo();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => FigureProfilePage(figure: avatar),
-                ),
-              );
+            onTap: () async {
+              pauseCurrentVideo();
+              final hasPermission = await VipCheck.checkVipPermission(
+                  context, VipPermissions.canViewDetails);
+              if (hasPermission) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => FigureProfilePage(figure: avatar),
+                  ),
+                );
+              }
             },
             child: Column(
               children: [
@@ -535,8 +542,7 @@ class _RecommendPageState extends State<RecommendPage> {
   Future<Map<String, String>> _getCurrentUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final nickname = prefs.getString('profile_nickname') ?? 'Anonymous';
-    String avatar =
-        prefs.getString('profile_avatar') ??
+    String avatar = prefs.getString('profile_avatar') ??
         'assets/Image/applogo_2025_5_15.png';
     if (!avatar.startsWith('assets/')) {
       final dir = await getApplicationDocumentsDirectory();
@@ -565,50 +571,60 @@ class _RecommendPageState extends State<RecommendPage> {
   ) {
     showCupertinoModalPopup(
       context: context,
-      builder:
-          (BuildContext context) => CupertinoActionSheet(
-            title: const Text('What would you like to do?'),
-            message: const Text('Choose an action for this comment'),
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Report submitted, will be reviewed within 24 hours.',
-                      ),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-                child: const Text('Report'),
-              ),
-              CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _blockCommentUser(c.userID, setModalState, figureID);
-                },
-                isDestructiveAction: true,
-                child: const Text('Block & Hide'),
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('What would you like to do?'),
+        message: const Text('Choose an action for this comment'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Report submitted, will be reviewed within 24 hours.',
+                  ),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: const Text('Report'),
           ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              _blockCommentUser(c.userID, setModalState, figureID);
+            },
+            isDestructiveAction: true,
+            child: const Text('Block & Hide'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+      ),
     );
   }
 
   void _showCommentsSheet(BuildContext context, int figureID) {
     final comments = _commentsMap[figureID] ?? [];
-    final TextEditingController _commentController = TextEditingController();
     void addComment(StateSetter setModalState) async {
       final text = _commentController.text.trim();
       if (text.isEmpty) return;
+
+      // 检查是否有足够的coins
+      final shouldGoToWallet = await CoinsCheck.checkCoinsForComment(context);
+      if (shouldGoToWallet) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const WalletPage()));
+        return;
+      }
+      // 余额足够才继续
+      if (_commentController.text.trim().isEmpty) return;
+      await CoinsCheck.deductCoinsForComment();
+
       final userProfile = await _getCurrentUserProfile();
       final newComment = Comment(
         commentID: '${figureID}_${DateTime.now().millisecondsSinceEpoch}',
@@ -625,9 +641,8 @@ class _RecommendPageState extends State<RecommendPage> {
       setState(() {
         comments.insert(0, newComment);
         _recommendList.firstWhere(
-              (e) => e['figureID'] == figureID,
-            )['commentCount'] =
-            comments.length;
+          (e) => e['figureID'] == figureID,
+        )['commentCount'] = comments.length;
       });
       setModalState(() {});
       _commentController.clear();
@@ -699,144 +714,139 @@ class _RecommendPageState extends State<RecommendPage> {
                       ],
                     ),
                     Expanded(
-                      child:
-                          comments.isEmpty
-                              ? Center(
-                                child: Text(
-                                  'No comments yet. Be the first to comment!',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[500],
+                      child: comments.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No comments yet. Be the first to comment!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(
+                                top: 8,
+                                bottom: 8,
+                              ),
+                              itemCount: comments.length,
+                              itemBuilder: (context, idx) {
+                                final c = comments[idx];
+                                if (_blockedUserIds.contains(c.userID))
+                                  return const SizedBox.shrink();
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
                                   ),
-                                ),
-                              )
-                              : ListView.builder(
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 8,
-                                ),
-                                itemCount: comments.length,
-                                itemBuilder: (context, idx) {
-                                  final c = comments[idx];
-                                  if (_blockedUserIds.contains(c.userID))
-                                    return const SizedBox.shrink();
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 10,
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage:
-                                              c.userAvatar.startsWith('assets/')
-                                                  ? AssetImage(c.userAvatar)
-                                                      as ImageProvider
-                                                  : FileImage(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage:
+                                            c.userAvatar.startsWith('assets/')
+                                                ? AssetImage(c.userAvatar)
+                                                    as ImageProvider
+                                                : FileImage(
                                                     File(c.userAvatar),
                                                   ),
-                                          radius: 20,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    c.userName,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 15,
-                                                    ),
+                                        radius: 20,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  c.userName,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15,
                                                   ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    c.time,
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  c.time,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey,
                                                   ),
-                                                  if (c.userID != null &&
-                                                      c.userID !=
-                                                          (userProfile is Future
-                                                              ? 'me'
-                                                              : userProfile))
-                                                    GestureDetector(
-                                                      onTap:
-                                                          () =>
-                                                              _showCommentReportSheet(
-                                                                context,
-                                                                c,
-                                                                setModalState,
-                                                                figureID,
-                                                              ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets.only(
-                                                              left: 8.0,
-                                                            ),
-                                                        child: Icon(
-                                                          Icons.more_vert,
-                                                          size: 18,
-                                                          color:
-                                                              Colors.grey[500],
-                                                        ),
+                                                ),
+                                                if (c.userID != null &&
+                                                    c.userID !=
+                                                        (userProfile is Future
+                                                            ? 'me'
+                                                            : userProfile))
+                                                  GestureDetector(
+                                                    onTap: () =>
+                                                        _showCommentReportSheet(
+                                                      context,
+                                                      c,
+                                                      setModalState,
+                                                      figureID,
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                        left: 8.0,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.more_vert,
+                                                        size: 18,
+                                                        color: Colors.grey[500],
                                                       ),
                                                     ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                c.content,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Column(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                setModalState(() {
-                                                  c.isLiked = !c.isLiked;
-                                                  c.likeCount +=
-                                                      c.isLiked ? 1 : -1;
-                                                });
-                                              },
-                                              child: Icon(
-                                                c.isLiked
-                                                    ? Icons.favorite
-                                                    : Icons.favorite_border,
-                                                color:
-                                                    c.isLiked
-                                                        ? Color(0xFFDB64A5)
-                                                        : Colors.grey,
-                                                size: 20,
-                                              ),
+                                                  ),
+                                              ],
                                             ),
+                                            const SizedBox(height: 2),
                                             Text(
-                                              '${c.likeCount}',
+                                              c.content,
                                               style: const TextStyle(
-                                                fontSize: 13,
+                                                fontSize: 15,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Column(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              setModalState(() {
+                                                c.isLiked = !c.isLiked;
+                                                c.likeCount +=
+                                                    c.isLiked ? 1 : -1;
+                                              });
+                                            },
+                                            child: Icon(
+                                              c.isLiked
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: c.isLiked
+                                                  ? Color(0xFFDB64A5)
+                                                  : Colors.grey,
+                                              size: 20,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${c.likeCount}',
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                     ),
                     const Divider(height: 1),
                     SafeArea(
@@ -900,6 +910,69 @@ class _RecommendPageState extends State<RecommendPage> {
           ),
         );
       },
+    );
+  }
+
+  void _showCommentDialog(int figureID) async {
+    // 直接弹出评论输入框，不做 coins 检查
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Comment'),
+        content: TextField(
+          controller: _commentController,
+          decoration: const InputDecoration(
+            hintText: 'Write your comment...',
+          ),
+          maxLines: 3,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (_commentController.text.isNotEmpty) {
+                // 发送时检测 coins
+                final shouldGoToWallet =
+                    await CoinsCheck.checkCoinsForComment(context);
+                if (shouldGoToWallet) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const WalletPage()));
+                  return;
+                }
+                await CoinsCheck.deductCoinsForComment();
+                setState(() {
+                  _commentsMap
+                      .putIfAbsent(
+                        figureID,
+                        () => [],
+                      )
+                      .add(Comment(
+                        commentID:
+                            DateTime.now().millisecondsSinceEpoch.toString(),
+                        figureID: figureID,
+                        userID: 'current_user',
+                        userName: 'You',
+                        content: _commentController.text,
+                        time: DateTime.now().toString().substring(0, 16),
+                        userAvatar: 'assets/Image/default_avatar.png',
+                        likeCount: 0,
+                        isLiked: false,
+                      ));
+                });
+                _commentController.clear();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              }
+            },
+            child: const Text('Post'),
+          ),
+        ],
+      ),
     );
   }
 }
