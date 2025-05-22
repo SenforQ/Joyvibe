@@ -32,8 +32,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>MinimumOSVersion</key>
-	<string>13.0</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app needs local network access for debugging and development purposes.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to your microphone for voice calls.</string>
 	<key>NSUserTrackingUsageDescription</key>
