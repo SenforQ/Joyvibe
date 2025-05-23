@@ -19,6 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _nickname;
   File? _avatarFile;
   String? _appDocPath;
+  int _vipDays = 0;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _initProfile() async {
     await _initAppDocPath();
     await _loadProfile();
+    await _loadVipStatus();
   }
 
   Future<void> _initAppDocPath() async {
@@ -60,6 +62,13 @@ class _ProfilePageState extends State<ProfilePage> {
       await prefs.setString('profile_avatar', _avatarPath!);
       await prefs.setString('profile_nickname', _nickname!);
     }
+  }
+
+  Future<void> _loadVipStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _vipDays = prefs.getInt(VipPermissions.vipDays) ?? 0;
+    });
   }
 
   Future<String> _saveAvatarToSandbox(String srcPath) async {

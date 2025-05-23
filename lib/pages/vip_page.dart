@@ -145,7 +145,7 @@ class _VipPageState extends State<VipPage> {
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
         await _inAppPurchase.completePurchase(purchase);
-        int addDays = _selectedIndex == 0 ? 14 : 37; // 7+7 or 30+7
+        int addDays = _selectedIndex == 0 ? 7 : 30; // 修改为实际购买天数，不再赠送
         final prefs = await SharedPreferences.getInstance();
         int currentVip = prefs.getInt(VipPermissions.vipDays) ?? 0;
         int newVipDays = currentVip + addDays;
@@ -463,15 +463,6 @@ class _VipPageState extends State<VipPage> {
                 style: TextStyle(
                   color: selected ? const Color(0xFFFFC107) : Colors.grey[400],
                   fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                _selectedIndex == 0 ? '+7 Days VIP' : '+7 Days VIP',
-                style: TextStyle(
-                  color: selected ? const Color(0xFFFFC107) : Colors.grey[400],
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
